@@ -1,0 +1,7 @@
+pandas
+pip
+plotly
+python>=3.8
+streamlit
+numpy
+scipy
