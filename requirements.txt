@@ -1,7 +1,10 @@
-pandas
-pip
-plotly
-python>=3.8
-streamlit
-numpy
-scipy
+streamlit>=1.30.0
+pandas>=2.0.0
+numpy>=1.23.0
+plotly>=5.18.0
+seaborn>=0.12.0
+matplotlib>=3.7.0
+scipy>=1.10.0
+scikit-learn>=1.2.0
+openpyxl>=3.1.0  # Needed for reading Excel (.xlsx) files
+xlrd>=2.0.1      # Needed for reading old Excel (.xls) files
