@@ -330,8 +330,10 @@ def create_manufacturing_dashboard(mfg_analysis):
     fig.add_hline(y=lcl, line_dash="dash", line_color="red", row=2, col=2)
     
     fig.update_layout(height=800, title_text="Manufacturing Performance Dashboard")
-    
+
     return fig
+
+def create_run_chart(df, date_col, value_col):
     """Create Run Chart with control limits"""
     try:
         df_run = df.copy()
