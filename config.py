@@ -37,12 +37,15 @@ CORRELATION_THRESHOLD = 0.5  # Minimum correlation to report as "strong"
 OUTLIER_IQR_MULTIPLIER = 1.5  # Standard IQR multiplier for outlier detection
 STOPPAGE_SIGMA_THRESHOLD = 3  # Sigma multiplier for detecting production stoppages
 
-# Shift Definitions (hours)
+# Shift Definitions (hours, using decimal for 30-minute increments)
+# Day Shift: 6:30 AM - 6:30 PM (12 hours)
+# Night Shift: 6:30 PM - 6:30 AM (12 hours)
 SHIFT_DEFINITIONS = {
-    'Day Shift (6-14)': (6, 14),
-    'Evening Shift (14-22)': (14, 22),
-    'Night Shift (22-6)': (22, 6)
+    'Day Shift (6:30-18:30)': (6.5, 18.5),
+    'Night Shift (18:30-6:30)': (18.5, 6.5)
 }
+SHIFT_DAY_START = 6.5  # 6:30 AM
+SHIFT_NIGHT_START = 18.5  # 6:30 PM
 
 # Control Chart Settings
 CONTROL_LIMIT_SIGMA = 3  # Standard deviation multiplier for control limits

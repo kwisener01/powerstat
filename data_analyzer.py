@@ -240,12 +240,15 @@ class DataAnalyzer:
             actual_parts = len(df_mfg) - 1
             performance_efficiency = (actual_parts / theoretical_max_parts * 100) if theoretical_max_parts > 0 else 0
 
-            # Shift analysis
+            # Shift analysis (using decimal hours for 30-minute precision)
             df_mfg['hour'] = df_mfg[timestamp_col].dt.hour
-            df_mfg['shift'] = df_mfg['hour'].apply(lambda x:
-                'Day Shift (6-14)' if 6 <= x < 14 else
-                'Evening Shift (14-22)' if 14 <= x < 22 else
-                'Night Shift (22-6)')
+            df_mfg['minute'] = df_mfg[timestamp_col].dt.minute
+            df_mfg['decimal_hour'] = df_mfg['hour'] + df_mfg['minute'] / 60.0
+
+            # Assign shifts based on 6:30 AM and 6:30 PM boundaries
+            df_mfg['shift'] = df_mfg['decimal_hour'].apply(lambda x:
+                'Day Shift (6:30-18:30)' if config.SHIFT_DAY_START <= x < config.SHIFT_NIGHT_START
+                else 'Night Shift (18:30-6:30)')
 
             shift_stats = df_mfg.groupby('shift')['time_diff_seconds'].agg(['count', 'mean', 'std']).round(2)
 

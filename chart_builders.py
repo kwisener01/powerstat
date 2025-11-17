@@ -296,13 +296,19 @@ def generate_sample_manufacturing_data() -> pd.DataFrame:
             part_type = np.random.choice(config.SAMPLE_PART_TYPES)
             base_cycle = config.SAMPLE_BASE_CYCLE_TIMES[part_type]
 
-            # Add variation and shift effects
+            # Add variation and shift effects (2-shift system: 6:30-18:30 and 18:30-6:30)
             hour = current_time.hour
+            minute = current_time.minute
+            decimal_hour = hour + minute / 60.0
+
+            # Night shift (18:30-6:30) is typically slower than day shift
             shift_multiplier = 1.0
-            if 22 <= hour or hour < 6:  # Night shift slower
-                shift_multiplier = 1.15
-            elif 14 <= hour < 22:  # Evening shift
-                shift_multiplier = 1.05
+            if config.SHIFT_DAY_START <= decimal_hour < config.SHIFT_NIGHT_START:
+                # Day shift (6:30 AM - 6:30 PM) - baseline performance
+                shift_multiplier = 1.0
+            else:
+                # Night shift (6:30 PM - 6:30 AM) - slightly slower
+                shift_multiplier = 1.10
 
             # Random variation
             cycle_time = np.random.normal(base_cycle * shift_multiplier, base_cycle * 0.1)
