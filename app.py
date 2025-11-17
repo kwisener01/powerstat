@@ -21,6 +21,14 @@ from chart_builders import (
     generate_sample_sales_data,
     generate_sample_manufacturing_data
 )
+from export_utils import (
+    export_dataframe_to_csv,
+    export_dataframe_to_excel,
+    export_analysis_report,
+    export_manufacturing_report,
+    get_timestamp_filename,
+    export_chart_as_html
+)
 
 # Configure logging
 logging.basicConfig(level=getattr(logging, config.LOG_LEVEL))
@@ -197,6 +205,28 @@ def main():
                 st.subheader("📖 Data Preview")
                 st.dataframe(df.head(config.MAX_PREVIEW_ROWS), use_container_width=True)
 
+                # Export data
+                st.subheader("💾 Export Data")
+                col1, col2 = st.columns(2)
+                with col1:
+                    csv_data = export_dataframe_to_csv(df)
+                    st.download_button(
+                        label="📥 Download as CSV",
+                        data=csv_data,
+                        file_name=get_timestamp_filename("data_export", "csv"),
+                        mime="text/csv",
+                        help="Export the full dataset as CSV"
+                    )
+                with col2:
+                    excel_data = export_dataframe_to_excel(df, sheet_name="Data")
+                    st.download_button(
+                        label="📥 Download as Excel",
+                        data=excel_data,
+                        file_name=get_timestamp_filename("data_export", "xlsx"),
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        help="Export the full dataset as Excel"
+                    )
+
                 # Missing values
                 if any(basic_stats['missing_values'].values()):
                     st.subheader("⚠️ Missing Values Analysis")
@@ -243,6 +273,17 @@ def main():
                     for col, info in outliers.items():
                         st.write(f"**{col}**: {info['count']} outliers "
                                f"({info['percentage']:.1f}%)")
+
+                # Export analysis report
+                st.subheader("💾 Export Analysis Report")
+                report_data = export_analysis_report(basic_stats, corr_analysis, outliers)
+                st.download_button(
+                    label="📥 Download Complete Analysis Report (Excel)",
+                    data=report_data,
+                    file_name=get_timestamp_filename("analysis_report", "xlsx"),
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    help="Export comprehensive analysis with all statistics, correlations, and outliers"
+                )
 
             with tab3:
                 st.header("📊 AI Visualization Team")
@@ -528,6 +569,17 @@ def main():
                             recommendations = generate_manufacturing_recommendations(mfg_analysis)
                             for rec in recommendations:
                                 st.write(f"• {rec}")
+
+                            # Export manufacturing report
+                            st.subheader("💾 Export Manufacturing Report")
+                            mfg_report_data = export_manufacturing_report(mfg_analysis)
+                            st.download_button(
+                                label="📥 Download Manufacturing Analysis Report (Excel)",
+                                data=mfg_report_data,
+                                file_name=get_timestamp_filename("manufacturing_report", "xlsx"),
+                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                help="Export comprehensive manufacturing analysis with KPIs, shift data, and part analysis"
+                            )
 
                         else:
                             st.error("❌ Could not analyze manufacturing times. "
